@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3 uid="uid://bedrpgua2lr2w"]
+
+[ext_resource type="Script" path="res://scripts/game.gd" id="1_bt56w"]
+[ext_resource type="Script" path="res://scripts/cam_body.gd" id="3_j3pwe"]
+[ext_resource type="Texture2D" uid="uid://dklw1rj2mxcox" path="res://assets/sprites/Sprite_sheet_Buildings.png" id="3_u6q0a"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gcx8a"]
+texture = ExtResource("3_u6q0a")
+texture_region_size = Vector2i(32, 32)
+1:0/size_in_atlas = Vector2i(2, 1)
+1:0/0 = 0
+1:0/0/texture_origin = Vector2i(-16, 0)
+0:2/size_in_atlas = Vector2i(2, 1)
+0:2/0 = 0
+0:2/0/texture_origin = Vector2i(-16, 0)
+1:1/0 = 0
+0:1/0 = 0
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_g232t"]
+tile_size = Vector2i(32, 32)
+sources/1 = SubResource("TileSetAtlasSource_gcx8a")
+
+[node name="game" type="Node2D"]
+script = ExtResource("1_bt56w")
+
+[node name="CamBody" type="CharacterBody2D" parent="."]
+position = Vector2(288, 162)
+motion_mode = 1
+script = ExtResource("3_j3pwe")
+
+[node name="Camera2D" type="Camera2D" parent="CamBody"]
+zoom = Vector2(2, 2)
+limit_left = 0
+limit_top = 0
+limit_smoothed = true
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
+
+[node name="GridLayer" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_g232t")
+collision_enabled = false
