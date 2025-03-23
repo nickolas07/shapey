@@ -38,7 +38,10 @@ func _input(event: InputEvent) -> void:
 	var distance: float    = mouse_pos.distance_to(prev_mouse_pos)
 
 	if Input.is_action_just_pressed("rotate"):
-		hover.rotate(deg_to_rad(90))
+		if hover.rotation_degrees == 270:
+			hover.set_rotation_degrees(0)
+		else:
+			hover.rotate(deg_to_rad(90))
 	hover.position = building_layer.map_to_local(tile_pos)
 
 	if belt.button_pressed:
@@ -87,14 +90,14 @@ func get_tile_rotation(layer: TileMapLayer, pos: Vector2i) -> int:
 	
 	var tile_data: TileData = layer.get_cell_tile_data(pos)
 	var rotation: int       = 0
-	if tile_data.flip_h and tile_data.flip_v:
-		rotation = 180
-	elif tile_data.flip_h and tile_data.transpose:
-		rotation = 270 
-	elif tile_data.flip_v and tile_data.transpose:
+	if tile_data.get_flip_h() and tile_data.transpose:
 		rotation = 90
+	elif tile_data.get_flip_v():
+		rotation = 180
+	elif tile_data.get_transpose():
+		rotation = 270
 	rotation /= 90
-	
+
 	return rotation
 
 func build(tile, mouse_pos, tile_pos, calc_tile_rotation=true):
@@ -118,64 +121,76 @@ func build(tile, mouse_pos, tile_pos, calc_tile_rotation=true):
 									'rechts': building_layer.get_surrounding_cells(prev_tile)[0], 
 									'oben': building_layer.get_surrounding_cells(prev_tile)[3], 
 									'links': building_layer.get_surrounding_cells(prev_tile)[2]}
-	
+
+	var neighbors_rotation: Dictionary = {'unten': get_tile_rotation(building_layer, neighbors['unten']),
+		                               'links': get_tile_rotation(building_layer, neighbors['links']),
+		                               'oben': get_tile_rotation(building_layer, neighbors['oben']),
+		                               'rechts': get_tile_rotation(building_layer, neighbors['rechts'])}
 
 	var neighbors_id: Dictionary = {'unten': building_layer.get_cell_source_id(neighbors['unten']),
 									   'links': building_layer.get_cell_source_id(neighbors['links']),
 									   'oben': building_layer.get_cell_source_id(neighbors['oben']),
 									   'rechts': building_layer.get_cell_source_id(neighbors['rechts'])}
 
+	# links nach rechts	/ rechts nach links
+	if neighbors_id['links'] != -1 and neighbors_id['rechts'] != -1 and tile_rotation % 2 != 0:
+		pass
+
+	# oben nach unten / unten nach oben
+	elif neighbors_id['oben'] != -1 and neighbors_id['unten'] != -1 and tile_rotation % 2 == 0:
+		pass
+
 	# unten nach rechts
-	if neighbors_id['unten'] != -1 and neighbors_id['rechts'] != -1 and tile_rotation == 1:
+	elif neighbors_id['unten'] != -1 and neighbors_rotation['unten'] == 0 and neighbors_id['rechts'] != -1 and neighbors_rotation['rechts'] == 1 and tile_rotation == 1:
 		source_id = TILE_INFO['belt_right'][0]
 		atlas_coods = TILE_INFO['belt_right'][1]
 		
 		building_layer.set_cell(prev_tile, source_id, atlas_coods, 0)
 		
 	# unten nach links
-	elif neighbors_id['unten'] != -1 and neighbors_id['links'] != -1 and tile_rotation == 3:
+	elif neighbors_id['unten'] != -1 and neighbors_rotation['unten'] == 0 and neighbors_id['links'] != -1 and neighbors_rotation['links'] == 3 and tile_rotation == 3:
 		source_id = TILE_INFO['belt_left'][0]
 		atlas_coods = TILE_INFO['belt_left'][1]
 		
 		building_layer.set_cell(prev_tile, source_id, atlas_coods, 0)
 	
 	# oben nach rechts
-	elif neighbors_id['oben'] != -1 and neighbors_id['rechts'] != -1 and tile_rotation == 1:
+	elif neighbors_id['oben'] != -1 and neighbors_rotation['oben'] == 2 and neighbors_id['rechts'] != -1 and neighbors_rotation['rechts'] == 1 and tile_rotation == 1:
 		source_id = TILE_INFO['belt_left'][0]
 		atlas_coods = TILE_INFO['belt_left'][1]
 	
 		building_layer.set_cell(prev_tile, source_id, atlas_coods, 2)
 
 	# oben nach links
-	elif neighbors_id['oben'] != -1 and neighbors_id['links'] != -1 and tile_rotation == 3:
+	elif neighbors_id['oben'] != -1 and neighbors_rotation['oben'] == 2 and neighbors_id['links'] != -1 and neighbors_rotation['links'] == 3 and tile_rotation == 3:
 		source_id = TILE_INFO['belt_right'][0]
 		atlas_coods = TILE_INFO['belt_right'][1]
 
 		building_layer.set_cell(prev_tile, source_id, atlas_coods, 2)
 	
 	# rechts nach oben
-	elif neighbors_id['rechts'] != -1 and neighbors_id['oben'] != -1 and tile_rotation == 0:
+	elif neighbors_id['rechts'] != -1 and neighbors_rotation['rechts'] == 3 and neighbors_id['oben'] != -1 and neighbors_rotation['oben'] == 0 and tile_rotation == 0:
 		source_id = TILE_INFO['belt_right'][0]
 		atlas_coods = TILE_INFO['belt_right'][1]
 
 		building_layer.set_cell(prev_tile, source_id, atlas_coods, 3)
 
 	# rechts nach unten
-	elif neighbors_id['rechts'] != -1 and neighbors_id['unten'] != -1 and tile_rotation == 2:
+	elif neighbors_id['rechts'] != -1 and neighbors_rotation['rechts'] == 3 and neighbors_id['unten'] != -1 and neighbors_rotation['unten'] == 2 and tile_rotation == 2:
 		source_id = TILE_INFO['belt_left'][0]
 		atlas_coods = TILE_INFO['belt_left'][1]
 
 		building_layer.set_cell(prev_tile, source_id, atlas_coods, 1)
 			
 	# links nach oben
-	elif neighbors_id['links'] != -1 and neighbors_id['oben'] != -1 and tile_rotation == 0:
+	elif neighbors_id['links'] != -1 and neighbors_rotation['links'] == 1 and neighbors_id['oben'] != -1 and neighbors_rotation['oben'] == 0 and tile_rotation == 0:
 		source_id = TILE_INFO['belt_left'][0]
 		atlas_coods = TILE_INFO['belt_left'][1]
 
 		building_layer.set_cell(prev_tile, source_id, atlas_coods, 3)
 
 	# links nach unten
-	elif neighbors_id['links'] != -1 and neighbors_id['unten'] != -1 and tile_rotation == 2:
+	elif neighbors_id['links'] != -1 and neighbors_rotation['links'] == 1 and neighbors_id['unten'] != -1 and neighbors_rotation['unten'] == 2 and tile_rotation == 2:
 		source_id = TILE_INFO['belt_right'][0]
 		atlas_coods = TILE_INFO['belt_right'][1]
 
