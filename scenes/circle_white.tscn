@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://baaaj5wljela5"]
+
+[ext_resource type="Texture2D" uid="uid://bhj88xgilfndl" path="res://assets/sprites/alll_circle_new.png.png" id="1_0jfty"]
+[ext_resource type="Script" uid="uid://dvw0trp68k3hy" path="res://scripts/item.gd" id="1_r1n8r"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_85x1a"]
+atlas = ExtResource("1_0jfty")
+region = Rect2(0, 0, 32, 32)
+
+[node name="circle_white" type="Node2D"]
+script = ExtResource("1_r1n8r")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = SubResource("AtlasTexture_85x1a")

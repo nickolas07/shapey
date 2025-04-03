@@ -20,7 +20,7 @@ func _ready() -> void:
 
 
 func _on_belt_toggled(toggled_on: bool) -> void:
-	hover.animation = "belt"
+	hover.animation = "belt_straight"
 	hover.visible = toggled_on
 	
 	if not toggled_on:
@@ -90,12 +90,30 @@ func get_tile_rotation(layer: TileMapLayer, pos: Vector2i) -> int:
 	
 	var tile_data: TileData = layer.get_cell_tile_data(pos)
 	var rotation: int       = 0
-	if tile_data.get_flip_h() and tile_data.transpose:
-		rotation = 90
-	elif tile_data.get_flip_v():
-		rotation = 180
-	elif tile_data.get_transpose():
-		rotation = 270
+	
+	if layer.get_cell_source_id(pos) == 5:
+		if tile_data.get_flip_h() and tile_data.get_transpose():
+			rotation = 90
+		elif tile_data.get_flip_v():
+			rotation = 180
+		elif tile_data.get_transpose():
+			rotation = 270
+	
+	elif layer.get_cell_source_id(pos) == 6:
+		if tile_data.get_flip_h() and tile_data.get_transpose():
+			rotation = 90
+		elif tile_data.get_flip_v() and tile_data.get_flip_h():
+			rotation = 180
+		elif tile_data.get_transpose() and tile_data.get_flip_v():
+			rotation = 270
+			
+	elif layer.get_cell_source_id(pos) == 2:
+		if tile_data.get_flip_v() and tile_data.get_transpose():
+			rotation = 90
+		elif tile_data.get_flip_h() and tile_data.get_flip_v():
+			rotation = 180
+		elif tile_data.get_transpose() and tile_data.get_flip_h():
+			rotation = 270
 	rotation /= 90
 
 	return rotation
@@ -123,9 +141,9 @@ func build(tile, mouse_pos, tile_pos, calc_tile_rotation=true):
 									'links': building_layer.get_surrounding_cells(prev_tile)[2]}
 
 	var neighbors_rotation: Dictionary = {'unten': get_tile_rotation(building_layer, neighbors['unten']),
-		                               'links': get_tile_rotation(building_layer, neighbors['links']),
-		                               'oben': get_tile_rotation(building_layer, neighbors['oben']),
-		                               'rechts': get_tile_rotation(building_layer, neighbors['rechts'])}
+									   'links': get_tile_rotation(building_layer, neighbors['links']),
+									   'oben': get_tile_rotation(building_layer, neighbors['oben']),
+									   'rechts': get_tile_rotation(building_layer, neighbors['rechts'])}
 
 	var neighbors_id: Dictionary = {'unten': building_layer.get_cell_source_id(neighbors['unten']),
 									   'links': building_layer.get_cell_source_id(neighbors['links']),

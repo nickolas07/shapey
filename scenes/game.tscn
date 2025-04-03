@@ -1,15 +1,16 @@
-[gd_scene load_steps=25 format=4 uid="uid://bedrpgua2lr2w"]
+[gd_scene load_steps=26 format=4 uid="uid://bedrpgua2lr2w"]
 
-[ext_resource type="Script" path="res://scripts/game.gd" id="1_bt56w"]
-[ext_resource type="Script" path="res://scripts/cam_body.gd" id="3_j3pwe"]
+[ext_resource type="Script" uid="uid://crt6mrwatd5gc" path="res://scripts/game.gd" id="1_bt56w"]
+[ext_resource type="Script" uid="uid://bcn84dvqcay8f" path="res://scripts/cam_body.gd" id="3_j3pwe"]
 [ext_resource type="Texture2D" uid="uid://bn1pq0rlug3ny" path="res://assets/sprites/Buildings.png" id="3_q8qrq"]
 [ext_resource type="Texture2D" uid="uid://b2hdu1vjo48h" path="res://assets/sprites/alll_circle.png" id="3_sxt0o"]
 [ext_resource type="Texture2D" uid="uid://ciovns2xk32gf" path="res://assets/sprites/alll_square.png" id="4_jtvkq"]
 [ext_resource type="Texture2D" uid="uid://dsqqlk1ugub51" path="res://assets/sprites/Tiles.png" id="4_odmgx"]
 [ext_resource type="Texture2D" uid="uid://dnwgnpo6o6c7c" path="res://assets/sprites/belt_left.png" id="5_4e7he"]
 [ext_resource type="Texture2D" uid="uid://dyyj4805ge40a" path="res://assets/sprites/belt_straight.png" id="7_dyskb"]
-[ext_resource type="Script" path="res://scripts/building_layer.gd" id="8_2g4mo"]
+[ext_resource type="Script" uid="uid://3h18x1m2pq2o" path="res://scripts/building_layer.gd" id="8_2g4mo"]
 [ext_resource type="Texture2D" uid="uid://y4uc060dyht" path="res://assets/sprites/belt_right.png" id="9_rnb64"]
+[ext_resource type="PackedScene" uid="uid://baaaj5wljela5" path="res://scenes/circle_white.tscn" id="11_kvpfn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vfiwi"]
 texture = ExtResource("3_q8qrq")
@@ -181,7 +182,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_1ag63")
 }],
 "loop": true,
-"name": &"belt",
+"name": &"belt_straight",
 "speed": 10.0
 }]
 
@@ -232,7 +233,10 @@ visible = false
 modulate = Color(1, 1, 1, 0.784314)
 z_index = 1
 sprite_frames = SubResource("SpriteFrames_cirbt")
-animation = &"belt"
-autoplay = "belt"
+animation = &"belt_straight"
+autoplay = "belt_straight"
+
+[node name="circle_white" parent="." instance=ExtResource("11_kvpfn")]
+position = Vector2(144, 144)
 
 [connection signal="toggled" from="CanvasLayer/belt" to="Layers/BuildingLayer" method="_on_belt_toggled"]
