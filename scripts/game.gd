@@ -25,8 +25,11 @@ func _ready() -> void:
 	place_tiles(Vector2(0, 0), map_size, 1, Vector2i(0, 0))
 	cam_body.global_position = base_layer.map_to_local(Vector2i(map_size/2, map_size/2))
 	
-	
 
 # Game running process
 func _process(_delta: float) -> void:
 	pass
+
+func _input(event: InputEvent) -> void:
+	if Input.is_action_just_pressed("esc"):
+		get_tree().change_scene_to_packed(load("res://scenes/main_menu.tscn"))
